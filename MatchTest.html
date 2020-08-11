@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+<script src="js/Info_County.js"></script>
+<script src="js/Info_Town.js"></script>
+<meta charset="utf-8"></meta>
+</head>
+<body>
+<script>
+let index_County = Info_County.findIndex( item => item['Name'].C == '台北市');
+var County_ID = Info_County[index_County]['ID']
+
+
+let index_Town = Info_Town[County_ID].findIndex( item => item['Name'].C == '中正區');
+var Town_ID = Info_Town[County_ID][index_Town]['ID']
+
+console.log(Town_ID);
+</script>
+	
+	
+</body>
+</html>

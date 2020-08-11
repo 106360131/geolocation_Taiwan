@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"></meta>
+<title>function</title>
+
+<script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
+integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
+crossorigin=""></script>
+
+<!-- Load Esri Leaflet from CDN -->
+<script src="https://unpkg.com/esri-leaflet@2.4.1/dist/esri-leaflet.js"
+integrity="sha512-xY2smLIHKirD03vHKDJ2u4pqeHA7OQZZ27EjtqmuhDguxiUvdsOuXMwkg16PQrm9cgTmXtoxA6kwr8KBy3cdcw=="
+crossorigin=""></script>
+
+<!-- Load Esri Leaflet Geocoder from CDN -->
+<link rel="stylesheet" href="https://unpkg.com/esri-leaflet-geocoder@2.3.3/dist/esri-leaflet-geocoder.css"
+integrity="sha512-IM3Hs+feyi40yZhDH6kV8vQMg4Fh20s9OzInIIAc4nx7aMYMfo+IenRUekoYsHZqGkREUgx0VvlEsgm7nCDW9g=="
+crossorigin="">
+<script src="https://unpkg.com/esri-leaflet-geocoder@2.3.3/dist/esri-leaflet-geocoder.js"
+integrity="sha512-HrFUyCEtIpxZloTgEKKMq4RFYhxjJkCiF5sDxuAokklOeZ68U2NPfh4MFtyIVWlsKtVbK5GD2/JzFyAfvT5ejA=="
+crossorigin=""></script>
+
+    
+<script src="js/Info_County.js"></script>
+<script src="js/Info_Town.js"></script>
+
+<script type = "text/javascript">
+	function geoFindMe() {
+  var output = document.getElementById("out");
+
+  if (!navigator.geolocation){
+	output.innerHTML = "<p>Geolocation is not supported by your browser</p>";
+	return;
+  }
+
+  function success(position) {
+	var latitude  = position.coords.latitude;
+	var longitude = position.coords.longitude;
+	var geocodeService = L.esri.Geocoding.geocodeService();
+	//output.innerHTML = '<p>Latitude is ' + latitude + '° <br>Longitude is ' + longitude + '°</p>';
+
+	geocodeService.reverse().latlng({"lat": latitude, "lng":longitude}).run(function (error, result) {
+		if (error) {
+			return;
+		}
+		console.log(result);
+		output.innerHTML += "縣市:" + result["address"]['Region'] + "<br>";
+		output.innerHTML += "地區:" + result["address"]['City'];
+		var City = result["address"]['Region'];
+		var Region = result["address"]['City'];
+		console.log(City);
+		
+		
+		let index_County = Info_County.findIndex( item => item['Name'].C == City);
+		var County_ID = Info_County[index_County]['ID']
+
+		let index_Town = Info_Town[County_ID].findIndex( item => item['Name'].C == Region);
+		var Town_ID = Info_Town[County_ID][index_Town]['ID']
+		
+		console.log(Town_ID);
+		var b = "https://www.cwb.gov.tw/V8/C/W/Town/MOD/3hr/"+Town_ID+"_3hr_m.html?T=2020073117-2";
+		document.getElementById("a").src=b;
+	});
+  };
+
+  function error() {
+	output.innerHTML = "Unable to retrieve your location";
+  };
+
+  output.innerHTML = "<p>Locating…</p>";
+
+  navigator.geolocation.getCurrentPosition(success, error);
+}
+</script>
+
+</head>
+<body>
+	<p><button onclick="geoFindMe()">Show my location</button>
+	<iframe src = "" id ="a" height = "200" width = "300"></iframe>
+	</p><div id="out">
+	<script>
+	
+</script>
+</div>
+</body>
+</html>
